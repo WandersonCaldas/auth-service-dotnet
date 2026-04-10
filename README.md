@@ -51,8 +51,8 @@ AuthService
     └── appsettings.Development.json
 	
 ---
+```
 
-```markdown
 ## 🚀 Primeiros passos
 
 ### 1. Clonar o repositório
@@ -67,11 +67,11 @@ dotnet run --project AuthService.API
 
 dotnet run --project AuthService.API
 
+```
+
 https://localhost:xxxx/swagger
 
----
 
-```markdown
 ## 🤝 Como contribuir
 
 Contribuições são bem-vindas!
@@ -87,4 +87,4 @@ git checkout -b minha-feature
 
 dotnet ef migrations add NomeDaMigration --project AuthService.API
 dotnet ef database update --project AuthService.API
-
+```
