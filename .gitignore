@@ -1,0 +1,5 @@
+/AuthService/.vs
+/AuthService/AuthService.API/bin/Debug
+/AuthService/AuthService.API/obj
+/AuthService/AuthService.API/AuthService.API.csproj.user
+/AuthService/AuthService.API/appsettings.Development.json
