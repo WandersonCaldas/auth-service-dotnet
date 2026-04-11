@@ -8,7 +8,7 @@ namespace AuthService.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "ADMINISTRADOR")]
+    //[Authorize(Roles = "ADMINISTRADOR")]
     public class ProfileController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -68,6 +68,10 @@ namespace AuthService.API.Controllers
             if (string.IsNullOrWhiteSpace(profile.Name))
                 return BadRequest("Nome é obrigatório.");
 
+            var exists = _context.Profiles.Any(x => x.Name.ToUpper().Trim() == profile.Name.ToUpper().Trim());
+            if (exists)
+                return BadRequest("Perfil já existe.");
+
             _context.Profiles.Add(profile);
             _context.SaveChanges();
 
@@ -85,6 +89,10 @@ namespace AuthService.API.Controllers
 
             if (string.IsNullOrWhiteSpace(profile.Name))
                 return BadRequest("Nome é obrigatório.");
+
+            var profileJaExiste = _context.Profiles.Any(x => x.Name.ToUpper().Trim() == profile.Name.ToUpper().Trim() && x.Id != id);
+            if (profileJaExiste)
+                return BadRequest("Já existe outro perfil com esse nome.");
 
             existing.Name = profile.Name;
 
