@@ -1,7 +1,7 @@
 ﻿using AuthService.API.Data;
 using AuthService.API.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthService.API.Controllers
@@ -12,25 +12,48 @@ namespace AuthService.API.Controllers
     public class ProfileController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IConfiguration _configuration;
+        private readonly int pageSize = 0;
 
-        public ProfileController(AppDbContext context)
+        public ProfileController(AppDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
+
+            pageSize = _configuration.GetValue<int>("Pagination:PageSize");
         }
 
         // GET: api/profile
         [HttpGet]
-        public IActionResult GetAll()
-        {
-            var profiles = _context.Profiles.ToList();
-            return Ok(profiles);
+        public IActionResult GetAll(int page = 1)
+        {           
+            if (page < 1)
+                page = 1;
+
+            var totalRecords = _context.Profiles.AsNoTracking().Count();
+
+            var profiles = _context.Profiles
+                .AsNoTracking()
+                .OrderBy(x => x.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return Ok(new
+            {
+                page,
+                pageSize,
+                totalRecords,
+                totalPages = (int)Math.Ceiling((double)totalRecords / pageSize),
+                data = profiles
+            });
         }
 
         // GET: api/profile/1
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            var profile = _context.Profiles.FirstOrDefault(x => x.Id == id);
+            var profile = _context.Profiles.AsNoTracking().FirstOrDefault(x => x.Id == id);
 
             if (profile == null)
                 return NotFound("Perfil não encontrado.");

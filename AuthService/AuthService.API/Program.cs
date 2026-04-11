@@ -1,4 +1,5 @@
 using AuthService.API.Data;
+using AuthService.API.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -88,6 +89,8 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod();
     });
 });
+
+builder.Services.AddAutoMapperProfiles();
 
 var app = builder.Build();
 

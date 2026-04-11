@@ -17,10 +17,15 @@ namespace AuthService.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IConfiguration _configuration;
+        private readonly int pageSize = 0;
 
-        public AuthController(AppDbContext context)
+        public AuthController(AppDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
+
+            pageSize = _configuration.GetValue<int>("Pagination:PageSize");
         }
 
         [HttpGet("me")]
@@ -133,9 +138,18 @@ namespace AuthService.API.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult GetUsers()
+        public IActionResult GetUsers(int page = 1)
         {
+            if (page < 1)
+                page = 1;
+
+            var totalRecords = _context.Users.AsNoTracking().Count();
+
             var users = _context.Users
+                .AsNoTracking()
+                .OrderBy(x => x.Email)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(x => new
                 {
                     x.Id,
@@ -144,9 +158,16 @@ namespace AuthService.API.Controllers
                     x.ProfileId,
                     ProfileName = x.Profile.Name
                 })
-                .ToList();
+                .ToList();            
 
-            return Ok(users);
+            return Ok(new
+            {
+                page,
+                pageSize,
+                totalRecords,
+                totalPages = (int)Math.Ceiling((double)totalRecords / pageSize),
+                data = users
+            });
         }
 
         [HttpGet("{id}")]
@@ -154,6 +175,7 @@ namespace AuthService.API.Controllers
         public IActionResult GetUserById(int id)
         {
             var user = _context.Users
+                .AsNoTracking()
                 .Where(x => x.Id == id)
                 .Select(x => new
                 {
