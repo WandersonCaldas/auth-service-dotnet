@@ -44,7 +44,7 @@ namespace AuthService.API.Controllers
                 profileId,
                 profileName = role
             });
-        }
+        }        
 
         [HttpPost("register")]
         public IActionResult Register(RegisterUserDto dto)
@@ -76,6 +76,39 @@ namespace AuthService.API.Controllers
             _context.SaveChanges();
 
             return Ok("Usuário cadastrado com sucesso.");
+        }
+        
+        [HttpPost("change-password")]
+        [Authorize]
+        public IActionResult ChangePassword(ChangePasswordDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.CurrentPassword) || string.IsNullOrWhiteSpace(dto.NewPassword) || string.IsNullOrWhiteSpace(dto.ConfirmNewPassword))
+                return BadRequest("Senha atual, nova senha e confirmação da nova senha são obrigatórias.");
+
+            if (dto.NewPassword != dto.ConfirmNewPassword)
+                return BadRequest("A confirmação da nova senha não confere.");
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+                return Unauthorized("Usuário não identificado.");
+
+            if (!int.TryParse(userIdClaim.Value, out int userId))
+                return Unauthorized("Id do usuário inválido.");
+
+            var user = _context.Users.FirstOrDefault(x => x.Id == userId);
+            if (user == null)
+                return NotFound("Usuário não encontrado.");
+
+            var passwordIsValid = VerifyPassword(dto.CurrentPassword, user.PasswordHash);
+            if (!passwordIsValid)
+                return BadRequest("Senha atual inválida.");
+
+            user.PasswordHash = HashPassword(dto.NewPassword);
+
+            _context.Users.Update(user);
+            _context.SaveChanges();
+
+            return Ok("Senha alterada com sucesso.");
         }
 
         [HttpPost("login")]
@@ -286,6 +319,12 @@ namespace AuthService.API.Controllers
             var bytes = Encoding.UTF8.GetBytes(password);
             var hash = sha256.ComputeHash(bytes);
             return Convert.ToBase64String(hash);
+        }
+
+        private bool VerifyPassword(string password, string passwordHash)
+        {
+            var hashedPassword = HashPassword(password);
+            return hashedPassword == passwordHash;
         }
         #endregion
     }
