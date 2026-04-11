@@ -1,4 +1,5 @@
-﻿using AuthService.API.Data;
+﻿using Asp.Versioning;
+using AuthService.API.Data;
 using AuthService.API.DTOs;
 using AuthService.API.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -11,9 +12,10 @@ using System.Security.Cryptography;
 using System.Text;
 
 namespace AuthService.API.Controllers
-{
-    [Route("api/[controller]")]
-    [ApiController]
+{   
+    [ApiController]    
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class AuthController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -47,6 +49,7 @@ namespace AuthService.API.Controllers
         }        
 
         [HttpPost("register")]
+        [AllowAnonymous]
         public IActionResult Register(RegisterUserDto dto)
         {
             // validação básica
@@ -112,6 +115,7 @@ namespace AuthService.API.Controllers
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public IActionResult Login(LoginDto dto)
         {
             var user = _context.Users
@@ -143,6 +147,7 @@ namespace AuthService.API.Controllers
         }
 
         [HttpPost("refresh-token")]
+        [AllowAnonymous]
         public IActionResult RefreshToken(RefreshTokenRequestDto dto)
         {
             var user = _context.Users.FirstOrDefault(x => x.RefreshToken == dto.RefreshToken);

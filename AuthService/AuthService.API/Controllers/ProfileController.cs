@@ -1,14 +1,16 @@
-﻿using AuthService.API.Data;
+﻿using Asp.Versioning;
+using AuthService.API.Data;
 using AuthService.API.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AuthService.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = "ADMINISTRADOR")]
+    [Authorize(Roles = "ADMINISTRADOR")]
+    [ApiVersion("1.0")]    
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class ProfileController : ControllerBase
     {
         private readonly AppDbContext _context;
