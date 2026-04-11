@@ -66,12 +66,9 @@ dotnet restore
 
 dotnet run --project AuthService.API
 
-dotnet run --project AuthService.API
-
 ```
 
-https://localhost:xxxx/swagger
-
+https://localhost:7213/swagger
 
 ## 🤝 Como contribuir
 
