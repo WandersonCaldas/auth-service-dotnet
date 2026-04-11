@@ -8,7 +8,7 @@ namespace AuthService.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "ADMINISTRADOR")]
     public class ProfileController : ControllerBase
     {
         private readonly AppDbContext _context;

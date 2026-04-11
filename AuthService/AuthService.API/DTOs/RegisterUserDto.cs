@@ -6,5 +6,5 @@
 
         public string Password { get; set; }
         public int ProfileId { get; set; }
-    }
+    }    
 }

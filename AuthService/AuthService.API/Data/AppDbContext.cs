@@ -50,7 +50,16 @@ namespace AuthService.API.Data
 
                 entity.Property(x => x.CreatedAt)
                       .IsRequired();
-            });
+            });            
+
+            modelBuilder.Entity<Profile>().HasData(
+                new Profile
+                {
+                    Id = 1,
+                    Name = "ADMINISTRADOR",
+                    CreatedAt = new DateTime(2026, 4, 10, 0, 0, 0, DateTimeKind.Utc)
+                }
+            );
 
             modelBuilder.Entity<User>(entity =>
             {

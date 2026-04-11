@@ -30,14 +30,14 @@ namespace AuthService.API.Controllers
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var email = User.FindFirst(ClaimTypes.Email)?.Value;
             var profileId = User.FindFirst("ProfileId")?.Value;
-            var profileName = User.FindFirst("ProfileName")?.Value;
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
 
             return Ok(new
             {
                 userId,
                 email,
                 profileId,
-                profileName
+                profileName = role
             });
         }
 
@@ -74,7 +74,7 @@ namespace AuthService.API.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login(RegisterUserDto dto)
+        public IActionResult Login(LoginDto dto)
         {
             var user = _context.Users
                 .Include(x => x.Profile)
@@ -244,7 +244,7 @@ namespace AuthService.API.Controllers
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim("ProfileId", user.ProfileId.ToString()),
-                new Claim("ProfileName", user.Profile?.Name ?? "")
+                new Claim(ClaimTypes.Role, user.Profile?.Name ?? "")
             };
 
             var token = new JwtSecurityToken(
