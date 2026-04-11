@@ -45,6 +45,7 @@ AuthService
     ├── Data
     ├── DTOs
     ├── Entities
+    ├── Extensions
     ├── Migrations
     ├── Program.cs
     ├── appsettings.json
@@ -58,7 +59,7 @@ AuthService
 ### 1. Clonar o repositório
 
 ```bash
-git clone https://github.com/SEU_USUARIO/auth-service-dotnet.git
+git clone https://github.com/WandersonCaldas/auth-service-dotnet.git
 cd auth-service-dotnet
 	
 dotnet restore	
